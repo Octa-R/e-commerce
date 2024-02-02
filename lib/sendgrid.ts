@@ -11,9 +11,20 @@ interface sendEmailFields {
 }
 
 export async function sendEmail(msg: sendEmailFields) {
+	/*
 	try {
-		await sgMail.send(msg);
+		console.log({ msg });
+		const response = await sgMail.send(msg);
+		console.log("sendgrid", response);
 	} catch (error) {
 		console.error(error);
-	}
+	}*/
+	sgMail
+		.send(msg)
+		.then(() => {
+			console.log("Email sent");
+		})
+		.catch((error) => {
+			console.error(error);
+		});
 }

@@ -1,5 +1,5 @@
 {
-	"name": "passwordless",
+	"name": "e-commerce",
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
@@ -35,7 +35,7 @@
 		"@faker-js/faker": "^8.4.0",
 		"@types/random-seed": "^0.3.5",
 		"@types/react": "18.2.45",
-		"ava": "^6.1.1",
-		"typescript": "5.3.3"
+		"typescript": "^5.3.3"
 	}
 }
+

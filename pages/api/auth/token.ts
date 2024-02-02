@@ -20,6 +20,8 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 
 		const user = new User(auth.data.userId);
 		await user.pull();
+		auth.data.code = "";
+		auth.push();
 		const token = generate({ ...user.data, userId: user.id });
 		res.send({ token });
 	} catch (error) {

@@ -1,7 +1,8 @@
 import { firestore } from "../lib/firebase";
 import { cleanEmail } from "../utils";
+import { Model } from "./model";
 
-export class Auth {
+export class Auth extends Model {
 	static collection: FirebaseFirestore.CollectionReference<
 		FirebaseFirestore.DocumentData,
 		FirebaseFirestore.DocumentData
@@ -10,7 +11,7 @@ export class Auth {
 	data: any;
 	id: string;
 	constructor(id: string) {
-		this.id = id;
+		super(id);
 		this.ref = Auth.collection.doc(id);
 	}
 
