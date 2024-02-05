@@ -8,7 +8,12 @@ const client = algoliasearch(
 );
 
 // Create a new index and add a record
-const index = client.initIndex("products");
+const products = client.initIndex("products");
+
+export async function searchProducts(query) {
+	const response = await products.search(query);
+	return response;
+}
 //const record = { objectID: 1, name: "test_record" };
 //index.saveObject(record).wait();
 

@@ -1,7 +1,7 @@
 import { decode } from "lib/jwt";
 import type { NextApiRequest, NextApiResponse } from "next";
 import parseToken from "parse-bearer-token";
-
+import { ZodSchema } from "zod";
 export function authMiddleware(callback) {
 	return function (req: NextApiRequest, res: NextApiResponse) {
 		try {
@@ -20,6 +20,19 @@ export function authMiddleware(callback) {
 			}
 		} catch (error) {
 			res.status(400).send({ message: "error de token" });
+		}
+	};
+}
+
+export function bodySchemaValidation(schema: ZodSchema, callback) {
+	return function (req: NextApiRequest, res: NextApiResponse, token) {
+		try {
+			//ejecuta el controller
+			console.log(req.body);
+			schema.parse(req.body);
+			callback(req, res, token);
+		} catch (error) {
+			res.status(400).send(error);
 		}
 	};
 }
