@@ -3,6 +3,7 @@ import { User } from "models/user";
 import { generate } from "lib/jwt";
 import { isAfter } from "date-fns";
 import type { NextApiRequest, NextApiResponse } from "next";
+
 export default async function (req: NextApiRequest, res: NextApiResponse) {
 	try {
 		const { code, email } = req.body;

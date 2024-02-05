@@ -8,12 +8,15 @@ async function updateUserAdress(
 	res: NextApiResponse,
 	token
 ) {
-	const user = new User(token.userId);
-	console.log(req.body);
-
-	user.data.adress = req.body.adress;
-	await user.push();
-	res.send({ user: user.data });
+	try {
+		const user = new User(token.userId);
+		await user.pull();
+		user.data.adress = req.body.adress;
+		await user.push();
+		res.send({ user: user.data });
+	} catch (error) {
+		res.send({ error });
+	}
 }
 
 const handler = method({

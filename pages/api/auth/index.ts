@@ -3,7 +3,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { authSchema } from "schemas/authValidation";
 export default async function (req: NextApiRequest, res: NextApiResponse) {
 	try {
-		console.log(req.body);
 		authSchema.parse(req.body);
 		const data = await sendCode(req.body.email);
 		res.send(data);
