@@ -1,21 +1,35 @@
 import { Auth } from "models/auth";
-import { createPreference } from "lib/mercadopago";
 import { authMiddleware, bodySchemaValidation } from "lib/middlewares";
-import { Order } from "models/order";
 import { User } from "models/user";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { orderQuerySchema, orderBodySchema } from "schemas/order.schema";
 import method from "micro-method-router";
-import { getProductById } from "lib/airtable";
+import { z } from "zod";
+import { createNewOrder } from "controllers/orders";
+
+const orderSchema = z
+	.object({
+		items: z
+			.object({
+				id: z.string().max(100).min(1),
+				quantity: z.coerce.number().max(50).min(1),
+			})
+			.required()
+			.strict()
+			.array(),
+	})
+	.required()
+	.strict();
+
+type OrderData = z.infer<typeof orderSchema>;
 
 async function orderController(
 	req: NextApiRequest,
 	res: NextApiResponse,
-	token
+	token: any,
+	orderData: OrderData
 ) {
 	try {
 		const auth = await Auth.findByEmail(token.email);
-
 		if (!auth) {
 			throw "usuario no encontrado";
 		}
@@ -25,28 +39,21 @@ async function orderController(
 			throw new Error("usuario no encontrado");
 		}
 
-		//recuperar productos segun los id enviados
-		const products = getProductById(req.body.items);
-
-		//crear orden en nuestra bd
-		const orderData = { payer: user.data, items: [{}] };
-		const newOrder: Order = await Order.create(orderData);
-		console.log(orderData);
-		//crear preferencia en mp
-		const response = await createPreference({
-			...newOrder.data,
-			id: newOrder.id,
-			userId: token.userId,
+		console.log({ orderData, data: user.data });
+		const response: any = await createNewOrder({
+			items: orderData.items,
+			userData: user.data,
 		});
+		//res.send({ link_pago: response.sandbox_init_point });
 
-		res.send({ link_pago: response.sandbox_init_point });
+		res.send({ response });
 	} catch (error) {
 		console.log(error);
 		res.send({ error });
 	}
 }
 
-const schemaValidation = bodySchemaValidation(orderBodySchema, orderController);
+const schemaValidation = bodySchemaValidation(orderSchema, orderController);
 
 const handler = method({
 	post: schemaValidation,

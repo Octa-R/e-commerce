@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker/locale/es";
-import { ProductData } from "types/product";
+import { ProductData } from "types";
 
 faker.seed(123);
 

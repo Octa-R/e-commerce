@@ -1,6 +1,7 @@
 import { firestore } from "../lib/firebase";
+import { Model } from "./model";
 
-export class Order {
+export class Order extends Model {
 	static collection: FirebaseFirestore.CollectionReference<
 		FirebaseFirestore.DocumentData,
 		FirebaseFirestore.DocumentData
@@ -9,7 +10,7 @@ export class Order {
 	data: any;
 	id: string;
 	constructor(id: string) {
-		this.id = id;
+		super(id);
 		this.ref = Order.collection.doc(id);
 	}
 

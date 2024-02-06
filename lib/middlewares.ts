@@ -25,12 +25,11 @@ export function authMiddleware(callback) {
 }
 
 export function bodySchemaValidation(schema: ZodSchema, callback) {
-	return function (req: NextApiRequest, res: NextApiResponse, token) {
+	return async function (req: NextApiRequest, res: NextApiResponse, token) {
 		try {
-			//ejecuta el controller
-			console.log(req.body);
-			schema.parse(req.body);
-			callback(req, res, token);
+			console.log("bodySchemaBalidator", req.body);
+			const parsedBody = await schema.parse(req.body);
+			callback(req, res, token, parsedBody);
 		} catch (error) {
 			res.status(400).send(error);
 		}
