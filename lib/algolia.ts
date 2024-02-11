@@ -21,8 +21,11 @@ export async function saveOrUpdate(objects: AlgoliaProductData[]) {
     autoGenerateObjectIDIfNotExist: true,
   });
 }
-//const record = { objectID: 1, name: "test_record" };
-//index.saveObject(record).wait();
 
-// Search the index and print the results
-//index.search("test_record").then(({ hits }) => console.log(hits[0]));
+export async function getAllAlgoliaObjects() {
+  return await productsIndex.search("");
+}
+
+export async function productsBatch(operations) {
+  return await productsIndex.batch(operations);
+}
