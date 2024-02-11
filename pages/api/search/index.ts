@@ -3,7 +3,6 @@ import method from "micro-method-router";
 import { getAllProducts } from "lib/airtable";
 import { z } from "zod";
 import { searchProducts } from "lib/algolia";
-import { AlgoliaProductData } from "../../../types/index";
 import { withNextCors } from "lib/withCors";
 
 const searchSchema = z
@@ -49,4 +48,4 @@ const handler = method({
   get: getProducts,
 });
 
-export default withNextCors(handler);
+export default handler;
