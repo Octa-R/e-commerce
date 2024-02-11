@@ -4,22 +4,22 @@ import { PreferenceResponse } from "mercadopago/dist/clients/preference/commonTy
 import type { PreferenceCreateData } from "mercadopago/dist/clients/preference/create/types";
 
 const client = new MercadoPagoConfig({
-	accessToken: process.env.MP_TOKEN,
-	options: { timeout: 5000, idempotencyKey: "abc" },
+  accessToken: process.env.MP_TOKEN,
+  options: { timeout: 5000, idempotencyKey: "abc" },
 });
 
 export async function getMerchantOrder(
-	id: string | number
+  id: string | number
 ): Promise<MerchantOrderResponse> {
-	const merchantOrder = new MerchantOrder(client);
-	return await merchantOrder.get({ merchantOrderId: id });
+  const merchantOrder = new MerchantOrder(client);
+  return await merchantOrder.get({ merchantOrderId: id });
 }
 
 export async function createPreference(
-	preferenceData: PreferenceCreateData
+  preferenceData: PreferenceCreateData
 ): Promise<PreferenceResponse> {
-	const preference = new Preference(client);
-	/*
+  const preference = new Preference(client);
+  /*
 	const newPref: PreferenceCreateData = {
 		body: {
 			items: preferenceData.body.items,
@@ -28,5 +28,5 @@ export async function createPreference(
 			notification_url: process.env.NOTIFICATION_URL,
 		},
 	};*/
-	return await preference.create(preferenceData);
+  return await preference.create(preferenceData);
 }
