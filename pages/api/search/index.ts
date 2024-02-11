@@ -4,6 +4,7 @@ import { getAllProducts } from "lib/airtable";
 import { z } from "zod";
 import { searchProducts } from "lib/algolia";
 import { AlgoliaProductData } from "../../../types/index";
+import { withNextCors } from "lib/withCors";
 
 const searchSchema = z
   .object({
@@ -48,4 +49,4 @@ const handler = method({
   get: getProducts,
 });
 
-export default handler;
+export default withNextCors(handler);
