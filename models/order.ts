@@ -1,3 +1,4 @@
+import { compareAsc, compareDesc, isAfter } from "date-fns";
 import { firestore } from "../lib/firebase";
 import { Model } from "./model";
 
@@ -20,5 +21,20 @@ export class Order extends Model {
     const newObject = new Order(object.id);
     newObject.data = data;
     return newObject;
+  }
+
+  static async getByUserId(userId: string): Promise<any[]> {
+    const snapshot = await this.collection.where("user.id", "==", userId).get();
+    return snapshot.docs
+      .map((snap) => {
+        const orderData = snap.data();
+        return {
+          id: snap.id,
+          state: orderData.state,
+          total: orderData.total,
+          createdAt: orderData.createdAt.toDate(),
+        };
+      })
+      .sort((a, b) => compareDesc(a.createdAt, b.createdAt));
   }
 }

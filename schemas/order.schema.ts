@@ -1,13 +1,15 @@
 import { z } from "zod";
 
-const orderBodySchema = z
-	.object({
-		items: z
-			.array(z.object({ id: z.string(), quantity: z.number() }))
-			.nonempty(),
-	})
-	.required();
-
-const orderQuerySchema = z.string();
-
-export { orderQuerySchema, orderBodySchema };
+export const orderSchema = z
+  .object({
+    items: z
+      .object({
+        id: z.string().max(100).min(1),
+        quantity: z.coerce.number().max(50).min(1),
+      })
+      .required()
+      .strict()
+      .array(),
+  })
+  .required()
+  .strict();

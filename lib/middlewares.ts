@@ -14,7 +14,7 @@ export function authMiddleware(callback) {
       //decodifica el token, y verifica que pertenesca a este servidor
       const decodedToken = decode(token);
       if (decodedToken) {
-        callback(req, res, decodedToken);
+        return callback(req, res, decodedToken);
       } else {
         res.status(401).send({ message: "token incorrecto" });
       }
@@ -27,9 +27,8 @@ export function authMiddleware(callback) {
 export function bodySchemaValidation(schema: ZodSchema, callback) {
   return async function (req: NextApiRequest, res: NextApiResponse, token) {
     try {
-      console.log("bodySchemaBalidator", req.body);
       const parsedBody = await schema.parse(req.body);
-      callback(req, res, token, parsedBody);
+      return callback(req, res, token, parsedBody);
     } catch (error) {
       res.status(400).send(error);
     }

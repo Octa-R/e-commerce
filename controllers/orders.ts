@@ -1,21 +1,35 @@
 import { getAllProducts, updateproducts } from "lib/airtable";
 import { createPreference } from "lib/mercadopago";
 import { Order } from "models/order";
-import { ItemsOrder, OrderStatus } from "types";
+import { PreferenceResponse } from "mercadopago/dist/clients/preference/commonTypes";
+import {
+  FirebaseOrderData,
+  ItemsOrder,
+  MPItemsData,
+  OrderData,
+  OrderStatus,
+} from "types";
 
-function orderTotalAmount(itemsOrder: ItemsOrder) {
+function orderTotalAmount(itemsOrder: MPItemsData[]) {
   return itemsOrder
-    .map(
-      (item: { quantity?: number; unit_price?: number }) =>
-        item.quantity * item.unit_price
-    )
+    .map((item) => item.quantity * item.unit_price)
     .reduce((acc: any, subtotal: any) => acc + subtotal, 0);
 }
 
-export async function createNewOrder({ items, userData }) {
+export async function getUserOrders(userId: string) {
+  return await Order.getByUserId(userId);
+}
+
+export async function createNewOrder({
+  orderData,
+  userData,
+}: {
+  orderData: OrderData;
+  userData: any;
+}) {
   //recuperar productos segun los id enviados
   const itemsData = await getAllProducts({
-    filter: { products: items },
+    filter: { products: orderData.items },
   });
 
   if (!itemsData) {
@@ -23,32 +37,34 @@ export async function createNewOrder({ items, userData }) {
   }
 
   //chequear stock
-  const mpOrderDataItems = items.map(
-    (orderItem: { id: string; quantity: number }) => {
-      const productData = itemsData.find((p) => p.id === orderItem.id);
+  const mpOrderDataItems: MPItemsData[] = orderData.items.map((orderItem) => {
+    const productData = itemsData.find((p) => p.id === orderItem.id);
 
-      if (!productData) {
-        throw "producto no encontrado";
-      }
-      if (productData.stock < orderItem.quantity) {
-        throw "no hay stock";
-      }
-      return {
-        id: productData.id,
-        unit_price: productData.price,
-        quantity: orderItem.quantity,
-        title: productData.title,
-      };
+    if (!productData) {
+      throw "producto no encontrado";
     }
-  );
+
+    if (productData.stock < orderItem.quantity) {
+      throw "no hay stock";
+    }
+
+    return {
+      id: productData.id,
+      unit_price: productData.price,
+      quantity: orderItem.quantity,
+      title: productData.title,
+    };
+  });
 
   //calcular total
-  const totalAmount = orderTotalAmount(items);
+  const totalAmount = orderTotalAmount(mpOrderDataItems);
 
   //crear orden en nuestra bd firebase
-  const firebaseOrderData = {
+  const firebaseOrderData: FirebaseOrderData = {
     user: userData,
     items: mpOrderDataItems,
+    createdAt: new Date(),
+    updatedAt: new Date(),
     state: OrderStatus.PAYMENT_PENDING,
     total: totalAmount,
   };
@@ -57,7 +73,7 @@ export async function createNewOrder({ items, userData }) {
   newOrder.push();
 
   //crear preferencia en mp
-  const mpCreatePreference = createPreference({
+  const mpCreatePreference: PreferenceResponse = await createPreference({
     body: {
       external_reference: newOrder.id,
       items: mpOrderDataItems,
@@ -69,12 +85,7 @@ export async function createNewOrder({ items, userData }) {
   //se resta el stock en nuestra bd y asi
   //queda reservado hasta que se pague la orden
   //en caso de que se cancele la orden, el stock vuelve a sumarse
-  const airtableUpdate = updateproducts(items);
+  await updateproducts(orderData.items);
 
-  const [updatedProducts, mpResponse] = await Promise.all([
-    airtableUpdate,
-    mpCreatePreference,
-  ]);
-  console.log({ updatedProducts, mpResponse });
-  return { ok: true };
+  return mpCreatePreference;
 }
