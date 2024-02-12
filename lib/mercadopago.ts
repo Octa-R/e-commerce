@@ -12,21 +12,14 @@ export async function getMerchantOrder(
   id: string | number
 ): Promise<MerchantOrderResponse> {
   const merchantOrder = new MerchantOrder(client);
-  return await merchantOrder.get({ merchantOrderId: id });
+  return await merchantOrder.get({
+    merchantOrderId: id,
+  });
 }
 
 export async function createPreference(
   preferenceData: PreferenceCreateData
 ): Promise<PreferenceResponse> {
   const preference = new Preference(client);
-  /*
-	const newPref: PreferenceCreateData = {
-		body: {
-			items: preferenceData.body.items,
-			payer: preferenceData.body.payer,
-			external_reference: externalId,
-			notification_url: process.env.NOTIFICATION_URL,
-		},
-	};*/
   return await preference.create(preferenceData);
 }

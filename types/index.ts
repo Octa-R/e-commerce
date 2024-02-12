@@ -15,7 +15,7 @@ export interface FirebaseOrderData {
   items: any;
   createdAt: Date;
   updatedAt: Date;
-  state: OrderStatus;
+  state: OrderState;
   total: number;
 }
 
@@ -33,9 +33,9 @@ export interface AlgoliaProductData {
 
 export type ItemsOrder = { id?: string; quantity?: number }[];
 
-export enum OrderStatus {
-  PAYMENT_PENDING = "PAYMENT_PENDING", // Esperando el pago
-  PAYMENT_COMPLETED = "PAYMENT_COMPLETED", // Pago completado
+export enum OrderState {
+  PENDING = "PENDING", // Esperando el pago
+  PAID = "PAID", // Pago completado
   CANCELED = "CANCELED", // Orden cancelada
 }
 

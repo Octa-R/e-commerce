@@ -7,7 +7,7 @@ import {
   ItemsOrder,
   MPItemsData,
   OrderData,
-  OrderStatus,
+  OrderState,
 } from "types";
 
 function orderTotalAmount(itemsOrder: MPItemsData[]) {
@@ -65,7 +65,7 @@ export async function createNewOrder({
     items: mpOrderDataItems,
     createdAt: new Date(),
     updatedAt: new Date(),
-    state: OrderStatus.PAYMENT_PENDING,
+    state: OrderState.PENDING,
     total: totalAmount,
   };
 

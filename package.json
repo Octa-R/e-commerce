@@ -20,6 +20,7 @@
 		"firebase": "^10.7.1",
 		"firebase-admin": "^12.0.0",
 		"jsonwebtoken": "^9.0.2",
+		"lodash": "^4.17.21",
 		"mailersend": "^2.2.0",
 		"mercadopago": "^2.0.6",
 		"micro-method-router": "^0.1.0",
@@ -35,6 +36,7 @@
 	},
 	"devDependencies": {
 		"@faker-js/faker": "^8.4.0",
+		"@types/lodash": "^4.14.202",
 		"@types/random-seed": "^0.3.5",
 		"@types/react": "18.2.45",
 		"typescript": "^5.3.3"

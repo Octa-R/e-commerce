@@ -1,6 +1,7 @@
 import { compareAsc, compareDesc, isAfter } from "date-fns";
 import { firestore } from "../lib/firebase";
 import { Model } from "./model";
+import { FirebaseOrderData, OrderState } from "types";
 
 export class Order extends Model {
   static collection: FirebaseFirestore.CollectionReference<
@@ -8,7 +9,7 @@ export class Order extends Model {
     FirebaseFirestore.DocumentData
   > = firestore.collection("orders");
   ref: FirebaseFirestore.DocumentReference;
-  data: any;
+  data: FirebaseOrderData;
   id: string;
   constructor(id: string) {
     super(id);
@@ -21,6 +22,14 @@ export class Order extends Model {
     const newObject = new Order(object.id);
     newObject.data = data;
     return newObject;
+  }
+
+  static async setPaidStatus(orderId: string) {
+    const order = new Order(orderId);
+    await order.pull();
+    order.data.state = OrderState.PAID;
+    await order.push();
+    return order;
   }
 
   static async getByUserId(userId: string): Promise<any[]> {
