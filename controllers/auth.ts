@@ -23,7 +23,6 @@ export async function findOrCreateAuth(email: string): Promise<Auth> {
 }
 
 export async function sendCode(email: string) {
-  console.log("sendcode");
   const auth = await findOrCreateAuth(email);
   const now = new Date();
   const expires = addMinutes(now, 20).toUTCString();
@@ -31,10 +30,10 @@ export async function sendCode(email: string) {
 
   auth.data.expires = expires;
   await auth.push();
-  await sendEmail({
-    emailTo: auth.data.email,
-    subject: "codigo",
-    body: `codigo: ${auth.data.code}`,
-  });
+  // await sendEmail({
+  //   emailTo: auth.data.email,
+  //   subject: "codigo",
+  //   body: `codigo: ${auth.data.code}`,
+  // });
   return auth.data;
 }
