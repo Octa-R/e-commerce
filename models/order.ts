@@ -28,6 +28,7 @@ export class Order extends Model {
     const order = new Order(orderId);
     await order.pull();
     order.data.state = OrderState.PAID;
+    order.data.updatedAt = new Date();
     await order.push();
     return order;
   }

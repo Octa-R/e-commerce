@@ -1,10 +1,9 @@
 import { Auth } from "models/auth";
 import { User } from "models/user";
 import gen from "random-seed";
-const random = gen.create("asdasd");
+const random = gen.create();
 import { addMinutes } from "date-fns";
-import { sendEmail } from "lib/sendgrid";
-import { faker } from "@faker-js/faker";
+import { sendEmail } from "lib/mailslurp";
 
 export async function findOrCreateAuth(email: string): Promise<Auth> {
   const auth = await Auth.findByEmail(email);
@@ -24,18 +23,18 @@ export async function findOrCreateAuth(email: string): Promise<Auth> {
 }
 
 export async function sendCode(email: string) {
+  console.log("sendcode");
   const auth = await findOrCreateAuth(email);
   const now = new Date();
   const expires = addMinutes(now, 20).toUTCString();
-  auth.data.code = faker.number.int({ min: 10000, max: 99999 });
+  auth.data.code = random.intBetween(111111, 999999);
 
   auth.data.expires = expires;
   await auth.push();
-  sendEmail({
-    to: auth.data.email, // Change to your recipient
-    from: "ruarteoctavio8@gmail.com", // Change to your verified sender
+  await sendEmail({
+    emailTo: auth.data.email,
     subject: "codigo",
-    text: `codigo: ${auth.data.code}`,
+    body: `codigo: ${auth.data.code}`,
   });
   return auth.data;
 }
