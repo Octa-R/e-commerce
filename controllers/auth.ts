@@ -3,7 +3,6 @@ import { User } from "models/user";
 import gen from "random-seed";
 const random = gen.create();
 import { addMinutes } from "date-fns";
-import { sendEmail } from "lib/mailslurp";
 
 export async function findOrCreateAuth(email: string): Promise<Auth> {
   const auth = await Auth.findByEmail(email);
