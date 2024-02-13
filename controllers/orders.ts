@@ -8,7 +8,9 @@ import {
   MPItemsData,
   OrderData,
   OrderState,
+  ProductData,
 } from "types";
+import _ from "lodash";
 
 function orderTotalAmount(itemsOrder: MPItemsData[]) {
   return itemsOrder

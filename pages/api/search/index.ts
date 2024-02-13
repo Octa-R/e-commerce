@@ -17,27 +17,31 @@ async function getProducts(req: NextApiRequest, res: NextApiResponse) {
   try {
     const parsedQueryParams = searchSchema.parse(req.query);
     const { q, offset, limit } = parsedQueryParams;
-    // busqueda en algolia
-    const searchResponse = await searchProducts(q);
-    // productos en la bd
-    const products = await getAllProducts();
+    // Busqueda en algolia y obtención de productos en la bd de manera concurrente
+    const [searchResponse, products] = await Promise.all([
+      searchProducts(q),
+      getAllProducts(),
+    ]);
 
-    const algoliaProductsId = searchResponse.hits.map((i: any) => i.productId);
+    const algoliaProductsId = new Set(
+      searchResponse.hits.map((i: any) => i.productId)
+    );
 
-    // filtramos los productos
-    const filteredProducts = products.filter((prod) => {
-      return algoliaProductsId.includes(prod.id);
-    });
+    // Filtramos y cortamos los productos
+    const slicedProducts = products
+      .filter((prod) => algoliaProductsId.has(prod.id))
+      .slice(offset, limit);
 
-    const slicesdProducts = filteredProducts.slice(offset, limit);
+    // Determinar el límite final
+    const finalLimit = Math.min(limit, products.length);
 
     res.send({
       paging: {
         offset: offset,
-        limit: limit,
+        limit: finalLimit,
         total: products.length,
       },
-      products: slicesdProducts,
+      products: slicedProducts,
     });
   } catch (error) {
     res.status(400).send(error);
