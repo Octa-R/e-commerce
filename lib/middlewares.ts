@@ -1,7 +1,9 @@
 import { decode } from "lib/jwt";
-import type { NextApiRequest, NextApiResponse } from "next";
+import NextCors from "nextjs-cors";
 import parseToken from "parse-bearer-token";
 import { ZodSchema } from "zod";
+import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
+
 export function authMiddleware(callback) {
   return function (req: NextApiRequest, res: NextApiResponse) {
     try {
@@ -32,5 +34,16 @@ export function bodySchemaValidation(schema: ZodSchema, callback) {
     } catch (error) {
       res.status(400).send(error);
     }
+  };
+}
+
+export function withNextCors(handler: NextApiHandler): NextApiHandler {
+  return async function (req: NextApiRequest, res: NextApiResponse) {
+    await NextCors(req, res, {
+      methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+      origin: "*",
+      optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+    });
+    handler(req, res);
   };
 }

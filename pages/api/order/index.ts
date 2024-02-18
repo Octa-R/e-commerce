@@ -1,5 +1,9 @@
 import { Auth } from "models/auth";
-import { authMiddleware, bodySchemaValidation } from "lib/middlewares";
+import {
+  authMiddleware,
+  bodySchemaValidation,
+  withNextCors,
+} from "lib/middlewares";
 import { User } from "models/user";
 import type { NextApiRequest, NextApiResponse } from "next";
 import method from "micro-method-router";
@@ -44,4 +48,6 @@ const handler = method({
   post: schemaValidation,
 });
 
-export default authMiddleware(handler);
+const authMiddlewarePass = authMiddleware(handler);
+
+export default withNextCors(authMiddlewarePass);

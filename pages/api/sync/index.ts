@@ -3,6 +3,7 @@ import method from "micro-method-router";
 import { syncProducts } from "controllers/products";
 import parseToken from "parse-bearer-token";
 import { BatchLog } from "models/batchLog";
+import { withNextCors } from "lib/middlewares";
 async function sync(req: NextApiRequest, res: NextApiResponse) {
   const token = parseToken(req);
   if (token !== `${process.env.CRON_SECRET}`) {
@@ -18,4 +19,4 @@ const handler = method({
   post: sync,
 });
 
-export default handler;
+export default withNextCors(handler);

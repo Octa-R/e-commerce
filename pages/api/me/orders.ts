@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import method from "micro-method-router";
 import { z } from "zod";
 import { getUserOrders } from "controllers/orders";
-import { authMiddleware } from "lib/middlewares";
+import { authMiddleware, withNextCors } from "lib/middlewares";
 
 async function getOrders(req: NextApiRequest, res: NextApiResponse, token) {
   try {
@@ -17,4 +17,6 @@ const handler = method({
   get: getOrders,
 });
 
-export default authMiddleware(handler);
+const authMiddlewarePass = authMiddleware(handler);
+
+export default withNextCors(authMiddlewarePass);

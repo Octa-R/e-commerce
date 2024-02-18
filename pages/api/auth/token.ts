@@ -3,8 +3,10 @@ import { User } from "models/user";
 import { generate } from "lib/jwt";
 import { isAfter } from "date-fns";
 import type { NextApiRequest, NextApiResponse } from "next";
+import method from "micro-method-router";
+import { withNextCors } from "lib/middlewares";
 
-export default async function (req: NextApiRequest, res: NextApiResponse) {
+async function generateToken(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { code, email } = req.body;
     const auth = await Auth.findByEmail(email);
@@ -29,3 +31,9 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     res.status(401).send({ error: error.message });
   }
 }
+
+const handler = method({
+  post: generateToken,
+});
+
+export default withNextCors(handler);

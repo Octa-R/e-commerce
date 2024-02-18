@@ -3,6 +3,7 @@ import method from "micro-method-router";
 import { getMerchantOrder } from "lib/mercadopago";
 import { MerchantOrderResponse } from "mercadopago/dist/clients/merchantOrder/commonTypes";
 import { pick } from "lodash";
+import { withNextCors } from "lib/middlewares";
 
 async function getOrder(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -27,4 +28,4 @@ const handler = method({
   get: getOrder,
 });
 
-export default handler;
+export default withNextCors(handler);

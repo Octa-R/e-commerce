@@ -1,8 +1,10 @@
 import { getMerchantOrder } from "lib/mercadopago";
 import { Order } from "models/order";
 import type { NextApiRequest, NextApiResponse } from "next";
+import method from "micro-method-router";
+import { withNextCors } from "lib/middlewares";
 
-export default async function (req: NextApiRequest, res: NextApiResponse) {
+async function mercadoPagoWebHook(req: NextApiRequest, res: NextApiResponse) {
   const { id, topic } = req.query;
   try {
     if (topic == "merchant_order") {
@@ -23,3 +25,9 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     res.send({ error });
   }
 }
+
+const handler = method({
+  post: mercadoPagoWebHook,
+});
+
+export default withNextCors(handler);

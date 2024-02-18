@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { User } from "models/user";
-import { authMiddleware } from "lib/middlewares";
+import { authMiddleware, withNextCors } from "lib/middlewares";
 import method from "micro-method-router";
-import { withNextCors } from "lib/withCors";
 
 async function getUserInfo(req: NextApiRequest, res: NextApiResponse, token) {
   const user = new User(token.userId);
@@ -26,4 +25,6 @@ const handler = method({
   patch: updateUserInfo,
 });
 
-export default authMiddleware(withNextCors(handler));
+const authMiddlewarePass = authMiddleware(handler);
+
+export default withNextCors(authMiddlewarePass);
