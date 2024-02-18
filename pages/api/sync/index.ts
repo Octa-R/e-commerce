@@ -9,7 +9,8 @@ async function sync(req: NextApiRequest, res: NextApiResponse) {
     res.status(401).send("Unauthorized");
   }
   const sync = await syncProducts();
-  BatchLog.create(sync);
+  await BatchLog.create(sync);
+  console.log({ sync });
   res.send({ ok: "ok" });
 }
 
